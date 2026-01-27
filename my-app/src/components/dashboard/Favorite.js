@@ -82,13 +82,8 @@ const Favorite = () => {
             <button onClick={() => getDownloadLinks(book.item_id)}>View Download Options</button>
           </div>
         </div> 
-          )
-        )
+      ))
     )}  
-
-
-
-
 
       {selectedBook && (
         <div className="download-modal">
