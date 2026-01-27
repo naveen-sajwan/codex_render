@@ -51,11 +51,13 @@
 //   console.log(`🚀 Server running on port ${PORT}`);
 // });
 
+import path from "path";
+import { fileURLToPath } from "url";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 import dotenv from "dotenv";
 import express from "express";
 import mongoose from "mongoose";
-import path from "path";
-import { fileURLToPath } from "url";
 
 // routes
 import pdfRoute from "./routes/pdfRoutes.js";
@@ -75,9 +77,6 @@ dotenv.config();
 
 const app = express();
 
-// ---------- Fix __dirname for ES modules ----------
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 // ---------- Middleware ----------
 // app.use(cors());
@@ -100,10 +99,12 @@ mongoose
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "my-app/build")));
 
-  app.get("*", (req, res) => {
+  // Serve React's index.html on all unmatched routes
+  app.get("/*", (req, res) => {
     res.sendFile(path.join(__dirname, "my-app/build", "index.html"));
   });
 }
+
 
 // ---------- Start Server (Render-safe) ----------
 const PORT = process.env.PORT || 5000;
