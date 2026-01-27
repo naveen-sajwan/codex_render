@@ -39,7 +39,7 @@ const Favorite = () => {
   	<div style={{marginTop:"1.25rem"}}>
     <div><h1 style={{fontFamily:"helvetica",padding:"10px"}}>Your Favourites 💗 </h1></div>
     <div className="book-list margin_side">
-      {cards.map((book) => (
+      {/*{cards.map((book) => (
         <div key={book._id} className="book-card">
           <div className="book-cover">
             <LazyLoadImage
@@ -58,7 +58,37 @@ const Favorite = () => {
             <button onClick={() => getDownloadLinks(book.item_id)}>View Download Options</button>
           </div>
         </div>
-      ))}
+      ))}*/}
+
+      {cards.length === 0 ? (
+        <p>favorite section is empty...</p>
+      ) : (
+        cards.map((book) => (
+          <div key={book._id} className="book-card">
+          <div className="book-cover">
+            <LazyLoadImage
+              alt={book.title}
+              effect="blur"
+              wrapperProps={{ style: { transitionDelay: "1s" } }}
+              src={book.coverUrl}
+              onError={(e) => {
+                e.target.src = 'https://archive.org/images/notfound.png';
+              }}
+            />
+          </div>
+          <div className="book-info">
+            <h3>{book.title}</h3>
+            <p>by {book.author}</p>
+            <button onClick={() => getDownloadLinks(book.item_id)}>View Download Options</button>
+          </div>
+        </div> 
+          )
+        )
+    )}  
+
+
+
+
 
       {selectedBook && (
         <div className="download-modal">

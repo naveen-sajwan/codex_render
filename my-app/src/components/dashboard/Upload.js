@@ -18,7 +18,7 @@ useEffect(() => {
           const response = await axios.get(`/niko/uploadedFiles/${userId}`);
           if (response.data.filesList) {
             setUploadedFiles(response.data.filesList);
-			setSearchResults(response.data.filesList);
+						setSearchResults(response.data.filesList);
           }
         } catch (error) {
           console.error("pata nhi kya hai", error);
