@@ -62,13 +62,11 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 // Routes
-import authRoute from "./routes/auth.js";
+import auth from "./routes/auth.js";
 import pdfRoute from "./routes/pdfRoutes.js";
-import mailRoute from "./routes/mail.js";
+import mail from "./routes/mail.js";
 import favouriteRoute from "./routes/favorite.js";
 import dashboardRoute from "./routes/dashboard.js";
-import uploadRoute from "./routes/upload.js";
-import virusRoute from "./routes/virusScan.js";
 
 // ---------------- ES Modules __dirname fix ----------------
 const __filename = fileURLToPath(import.meta.url);
@@ -85,13 +83,25 @@ mongoose.connect(process.env.MONGODB_URI)
   .catch(err => console.error("❌ MongoDB connection error:", err));
 
 // ----------------- API Routes -----------------
-app.use("/niko", pdfRoute);
-app.use("/niko/v1", authRoute);
-app.use("/niko/v1", mailRoute);
-app.use("/niko/v1", favouriteRoute);
-app.use("/niko/v1", dashboardRoute);
-app.use("/niko/v1", uploadRoute);
-app.use("/niko/v1", virusRoute);
+// app.use("/niko", pdfRoute);
+// app.use("/niko/v1", authRoute);
+// app.use("/niko/v1", mailRoute);
+// app.use("/niko/v1", favouriteRoute);
+// app.use("/niko/v1", dashboardRoute);
+// app.use("/niko/v1", uploadRoute);
+// app.use("/niko/v1", virusRoute);
+
+app.use(cors());
+app.use(express.json());
+app.use("/niko",pdfRoute);
+app.use("/niko/v1",auth);
+app.use("/niko/v1",mail);
+app.use("/niko/v1",favouriteRoute);
+app.use("/niko/v1",dashboardRoute);
+
+
+
+
 
 // ----------------- Serve React in Production -----------------
 if (process.env.NODE_ENV === "production") {
