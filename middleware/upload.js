@@ -1,6 +1,5 @@
 require("dotenv").config();
 const multer = require('multer');
-const cloudinary = require('cloudinary').v2;
 const path = require('path');
 
 // Configure Multer disk storage
