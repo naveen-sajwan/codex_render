@@ -51,66 +51,67 @@
 //   console.log(`🚀 Server running on port ${PORT}`);
 // });
 
-import path from "path";
-import { fileURLToPath } from "url";
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// app.js
 import dotenv from "dotenv";
-import express from "express";
-import mongoose from "mongoose";
-
-// routes
-import pdfRoute from "./routes/pdfRoutes.js";
-import auth from "./routes/auth.js";
-import mail from "./routes/mail.js";
-import favouriteRoute from "./routes/favorite.js";
-import dashboardRoute from "./routes/dashboard.js";
-
-// optional deps (keep if used elsewhere)
-import multer from "multer";
-import cloudinary from "cloudinary";
-import axios from "axios";
-import FormData from "form-data";
-import fs from "fs";
-
 dotenv.config();
 
+import express from "express";
+import mongoose from "mongoose";
+import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
+
+// Routes
+import authRoute from "./routes/auth.js";
+import pdfRoute from "./routes/pdfRoutes.js";
+import mailRoute from "./routes/mail.js";
+import favouriteRoute from "./routes/favorite.js";
+import dashboardRoute from "./routes/dashboard.js";
+import uploadRoute from "./routes/upload.js";
+import virusRoute from "./routes/virusScan.js";
+
+// ---------------- ES Modules __dirname fix ----------------
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// ----------------- App setup -----------------
 const app = express();
-
-
-// ---------- Middleware ----------
-// app.use(cors());
+app.use(cors()); // Enable CORS for all routes
 app.use(express.json());
 
-// ---------- Routes ----------
-app.use("/niko", pdfRoute);
-app.use("/niko/v1", auth);
-app.use("/niko/v1", mail);
-app.use("/niko/v1", favouriteRoute);
-app.use("/niko/v1", dashboardRoute);
-
-// ---------- MongoDB ----------
-mongoose
-  .connect(process.env.MONGODB_URI)
+// ----------------- MongoDB Connection -----------------
+mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log("✅ Connected to MongoDB"))
   .catch(err => console.error("❌ MongoDB connection error:", err));
 
-// ---------- Serve React ----------
-if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "my-app/build")));
+// ----------------- API Routes -----------------
+app.use("/niko", pdfRoute);
+app.use("/niko/v1", authRoute);
+app.use("/niko/v1", mailRoute);
+app.use("/niko/v1", favouriteRoute);
+app.use("/niko/v1", dashboardRoute);
+app.use("/niko/v1", uploadRoute);
+app.use("/niko/v1", virusRoute);
 
-  // Serve React's index.html on all unmatched routes
-  app.get("/*", (req, res) => {
-    res.sendFile(path.join(__dirname, "my-app/build", "index.html"));
+// ----------------- Serve React in Production -----------------
+if (process.env.NODE_ENV === "production") {
+  const reactBuildPath = path.join(__dirname, "my-app/build");
+
+  // Serve static files
+  app.use(express.static(reactBuildPath));
+
+  // Catch-all route for React (must be last)
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(reactBuildPath, "index.html"));
   });
 }
 
-
-// ---------- Start Server (Render-safe) ----------
+// ----------------- Start Server -----------------
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
+
 
 
 
