@@ -1199,6 +1199,20 @@ footer{
 
 }
 
+@media screen and (min-width: 1053px) and (max-width: 1440px) {
+  .dashboard_wrapper_text {
+    padding: 10px 20px;
+    width: 500px;
+  }
+
+  .dashboard_wrapper_img {
+    width: 500px;
+    display: flex;
+    justify-content: safe center;
+  }
+
+}
+
 
 
 
