@@ -15,7 +15,6 @@ const ContactUs = () => {
 	const [loading,setLoading] = useState(false)
 
 	const handleChange = (e)=>{
-		e.preventDefault();
 		const {name,value} = e.target;
 		setInputs({...inputs,[name]:value})	
 	}
