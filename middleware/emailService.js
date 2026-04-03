@@ -11,7 +11,6 @@ export const sendContactEmail = async ({ name, email, message }) => {
       to: [process.env.ADMIN_EMAIL],
       // replyTo: email, // This allows you to reply directly to the person
       subject: `New Contact Form Message from ${name}`,
-      html: htmlContent,
       text: `New message from ${name} (${email}):\n\n${message}`
     });
 
