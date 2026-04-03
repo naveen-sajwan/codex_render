@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import express from "express";
-import sendContactEmail from "../middleware/emailService.js";
+import { sendContactEmail } from "../middleware/emailService.js";
 
 const router = express.Router();
 
