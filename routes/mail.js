@@ -61,13 +61,13 @@ router.post("/sendMail",async(req,res)=>{
     // Return success response
     res.status(200).json({
       success: true,
-      message: 'Thank you for contacting us! We will get back to you within 24 hours.'
+      msg: "Email Sent Successfully"
     });
   } catch (error) {
     console.error('Contact form error:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to send your message. Please try again later or contact us directly.'
+      message: 'Failed to send your message.'
     });
   }
 })
