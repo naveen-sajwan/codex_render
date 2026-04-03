@@ -30,7 +30,7 @@ const ContactUs = () => {
 		try{
 			await axios.post(`/niko/v1/sendMail`,inputs)
 			.then((response)=>{
-				console.log(response);
+				// console.log(response);
 				if(response.data.msg==="Email Sent Successfully"){
 					toast.success(response.data.msg);
 					return setInputs({
