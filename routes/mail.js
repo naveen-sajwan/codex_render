@@ -1,104 +1,75 @@
 import dotenv from "dotenv";
 import express from "express";
-import sendEmail from "../middleware/emailService.js";
+import sendContactEmail from "../middleware/emailService.js";
 
 const router = express.Router();
 
-// ---------- SEND MAIL ----------
-router.post("/sendMail", async (req, res) => {
-  const { name, email, message } = req.body;
+// // ---------- SEND MAIL ----------
+// router.post("/sendMail", async (req, res) => {
+//   const { name, email, message } = req.body;
 
-  if (!name || !email || !message) {
-      return res.status(200).json({ msg: "All fields are required" });
-    }
+//   if (!name || !email || !message) {
+//       return res.status(200).json({ msg: "All fields are required" });
+//     }
 
-  // Email to admin
-  const adminMailOptions = {
-    from: process.env.EMAIL_USERNAME,
-    to: process.env.EMAIL_USERNAME,
-    subject: `🆕 Contact Form Submission from ${name}`,
-    html: `
-      <h3>New Contact Request</h3>
-      <p><strong>Name:</strong> ${name}</p>
-      <p><strong>Email:</strong> ${email}</p>
-      <p><strong>Message:</strong> ${message}</p>
-      <p>Received at: ${new Date().toLocaleString()}</p>
-    `,
-  };
+//   // Email to admin
+//   const adminMailOptions = {
+//     from: process.env.EMAIL_USERNAME,
+//     to: process.env.EMAIL_USERNAME,
+//     subject: `🆕 Contact Form Submission from ${name}`,
+//     html: `
+//       <h3>New Contact Request</h3>
+//       <p><strong>Name:</strong> ${name}</p>
+//       <p><strong>Email:</strong> ${email}</p>
+//       <p><strong>Message:</strong> ${message}</p>
+//       <p>Received at: ${new Date().toLocaleString()}</p>
+//     `,
+//   };
 
-  // Confirmation email to user
-  const userMailOptions = {
-    from: process.env.EMAIL_USERNAME,
-    to: email,
-    subject: "🎉 We received your message!",
-    html: `
-      <h3>Thank you for contacting us!</h3>
-      <p>We've received your message and will get back to you soon.</p>
-      <p>Here's what you sent us:</p>
-      <blockquote>${message}</blockquote>
-      <p>If you have any further questions, please don't hesitate to reply to this email.</p>
-      <p>Best regards,<br/>The Support Team</p>
-    `,
-  };
+//   // Confirmation email to user
+//   const userMailOptions = {
+//     from: process.env.EMAIL_USERNAME,
+//     to: email,
+//     subject: "🎉 We received your message!",
+//     html: `
+//       <h3>Thank you for contacting us!</h3>
+//       <p>We've received your message and will get back to you soon.</p>
+//       <p>Here's what you sent us:</p>
+//       <blockquote>${message}</blockquote>
+//       <p>If you have any further questions, please don't hesitate to reply to this email.</p>
+//       <p>Best regards,<br/>The Support Team</p>
+//     `,
+//   };
 
-  try {
-    await sendEmail(adminMailOptions);
-    sendEmail(userMailOptions);
-    res.status(200).json({ msg: "Email Sent Successfully" });
-  } catch (error) {
-    console.error("Error sending email:", error);
-    res.status(500).json({ msg: "Error Sending Email" });
-  }
-});
-
-export default router;
-
-
-// require("dotenv").config();
-// const router = require("express").Router();
-// const sendEmail = require("../middleware/emailService.js");
-
-// router.post("/sendMail",async(req,res)=>{
-//  const {name,email,message} = req.body;
-
-//  // Email to admin
-//  const adminMailOptions = {
-//       from: process.env.EMAIL_USERNAME,
-//       to: process.env.EMAIL_USERNAME,
-//       subject: `🆕 Contact Form Submission from ${name}`,
-//       html: `
-//         <h3>New Contact Request</h3>
-//         <p><strong>Name:</strong> ${name}</p>
-//         <p><strong>Email:</strong> ${email}</p>
-//         <p><strong>Message:</strong> ${message}</p>
-//         <p>Received at: ${new Date().toLocaleString()}</p>
-//       `
-//     };
-
-//     // Confirmation email to user
-//     const userMailOptions = {
-//       from: process.env.EMAIL_USERNAME,
-//       to: email,
-//       subject: '🎉We received your message!',
-//       html: `
-//         <h3>Thank you for contacting us!</h3>
-//         <p>We've received your message and will get back to you soon.</p>
-//         <p>Here's what you sent us:</p>
-//         <blockquote>${message}</blockquote>
-//         <p>If you have any further questions, please don't hesitate to reply to this email.</p>
-//         <p>Best regards,<br/>The Support Team</p>
-//       `
-//     };
-
-//  try{
-//    await sendEmail(adminMailOptions);
-//    await sendEmail(userMailOptions);
-//    res.status(200).json({msg: "Email Sent Successfully"})
-//  }catch(error){
-//    console.error(error);
-//    res.status(200).json({msg: "Error Sending Email"})
-//  }
+//   try {
+//     await sendEmail(adminMailOptions);
+//     sendEmail(userMailOptions);
+//     res.status(200).json({ msg: "Email Sent Successfully" });
+//   } catch (error) {
+//     console.error("Error sending email:", error);
+//     res.status(500).json({ msg: "Error Sending Email" });
+//   }
 // });
 
-// module.exports = router;
+router.post("/sendMail",async(req,res)=>{
+  try {
+    const { name, email, message } = req.body;
 
+    // Send the email
+    await sendContactEmail({ name, email, message });
+
+    // Return success response
+    res.status(200).json({
+      success: true,
+      message: 'Thank you for contacting us! We will get back to you within 24 hours.'
+    });
+  } catch (error) {
+    console.error('Contact form error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to send your message. Please try again later or contact us directly.'
+    });
+  }
+})
+
+export default router;

@@ -1,71 +1,49 @@
 import dotenv from "dotenv";
-import nodemailer from "nodemailer";
+import { Resend } from 'resend';
 
-dotenv.config();
+const resend = new Resend(process.env.RESEND_API_KEY);
 
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  host: "smtp.gmail.com",
-  port: 587,          // ✅ MUST be 587
-  secure: false,      // ✅ MUST be false for port 587
-  auth: {
-    user: process.env.EMAIL_USERNAME,   // your gmail
-    pass: process.env.EMAIL_PASSWORD,   // Gmail App Password
-  },
-  tls: {
-    rejectUnauthorized: false,
-  },
-  connectionTimeout: 10000, // ✅ prevent hanging forever
-});
-
-// (Optional but useful for debugging)
-transporter.verify((error, success) => {
-  if (error) {
-    console.error("SMTP connection failed:", error);
-  } else {
-    console.log("SMTP server is ready to send emails");
-  }
-});
-
-const sendEmail = async (mailOptions) => {
+export const sendContactEmail = async ({ name, email, message }) => {
   try {
-    const result = await transporter.sendMail(mailOptions);
-    console.log("Email sent:", result.messageId);
-    return result;
+    // Send email using Resend
+    const { data, error } = await resend.emails.send({
+      from: process.env.EMAIL_FROM,
+      to: [process.env.ADMIN_EMAIL],
+      // replyTo: email, // This allows you to reply directly to the person
+      subject: `New Contact Form Message from ${name}`,
+      html: htmlContent,
+      text: `New message from ${name} (${email}):\n\n${message}`
+    });
+
+    if (error) {
+      console.error('Resend API Error:', error);
+      throw new Error(error.message);
+    }
+
+    console.log(`Email sent successfully! ID: ${data.id}`);
+    return { success: true, messageId: data.id };
+    
   } catch (error) {
-    console.error("Error sending email:", error);
+    console.error('Error sending email:', error);
     throw error;
   }
 };
 
-export default sendEmail;
-
-// import dotenv from "dotenv";
-// import nodemailer from "nodemailer";
-
-// dotenv.config();
-
-// const transporter = nodemailer.createTransport({
-//  service:"gmail",
-//  auth:{
-//    user: process.env.EMAIL_USERNAME,
-//    pass: process.env.EMAIL_PASSWORD,
-//  },
-// });
-
-// const sendEmail = async(mailOptions)=>{
-//  try{
-//    const result = await transporter.sendMail(mailOptions);
-//    console.log(result);
-//    console.log("Email Sent Successfully")
-//  }catch(error){
-//    console.error("error Sending Email:",error);
-//    throw error;
-//  }
-// };
-
-// export default sendEmail;
-
+// Helper function to prevent XSS attacks
+// function escapeHtml(text) {
+//   const div = document?.createElement?.('div');
+//   if (div) {
+//     div.textContent = text;
+//     return div.innerHTML;
+//   }
+//   // Simple escape for Node.js environment
+//   return text
+//     .replace(/&/g, '&amp;')
+//     .replace(/</g, '&lt;')
+//     .replace(/>/g, '&gt;')
+//     .replace(/"/g, '&quot;')
+//     .replace(/'/g, '&#39;');
+// }
 
 
 
